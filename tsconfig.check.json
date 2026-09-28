@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "incremental": false,
+    "declaration": false,
+    "emitDeclarationOnly": false,
+    "noEmit": true,
+    "paths": {
+      "@sekizui/arc": ["./packages/arc/src/index.ts"],
+      "@sekizui/spinal": ["./packages/spinal/src/index.ts"],
+      "@sekizui/nerve-minecraft": ["./packages/nerve-minecraft/src/index.ts"]
+    }
+  },
+  "include": ["packages/*/src/**/*.ts", "packages/*/tests/**/*.ts", "vitest.config.ts"],
+  "exclude": ["**/node_modules", "**/lib"]
+}

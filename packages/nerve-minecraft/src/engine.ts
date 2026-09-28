@@ -1,6 +1,9 @@
+import { setTimeout as delay } from "node:timers/promises";
+
 import { createBot, type Bot } from "mineflayer";
 
-import type { EngineMessage, NerveMessage } from "./protocol.js";
+import { runPrimitive, type BotActLike } from "./primitives.js";
+import type { EngineMessage, NerveMessage, NerveRequest, PrimitiveOutcome } from "./protocol.js";
 import { readBot } from "./view.js";
 
 /** 引擎子进程的启动参数，由父进程用 argv[2] 递进来。 */
@@ -67,6 +70,31 @@ function connect(): void {
   });
 }
 
+function reply(id: number, outcome: Omit<PrimitiveOutcome, "generation">): void {
+  send({ kind: "rep", id, ...outcome, generation });
+}
+
+// 原语串行：同一个 bot 上并发控制互相打架，一次只跑一个。
+// 排在这里而不是父侧，是因为排队要贴着 bot；父侧看到的只是一个还没回执的请求。
+let queue: Promise<void> = Promise.resolve();
+
+function execute(request: NerveRequest): void {
+  queue = queue
+    .then(async () => {
+      if (stopping) return;
+      // 执行时才取 bot：等排队的时间里可能已经换过代或断线
+      const outcome = await runPrimitive(bot as unknown as BotActLike | undefined, request.primitive, {
+        now: () => Date.now(),
+        generation: () => generation,
+        sleep: delay,
+      });
+      reply(request.id, outcome);
+    })
+    .catch((error: unknown) => {
+      reply(request.id, { ok: false, detail: `引擎内部出错：${error instanceof Error ? error.message : String(error)}`, ms: 0 });
+    });
+}
+
 // 一直推，读不到就推 null —— 父侧据此把这一拍当作没有可用读数
 setInterval(() => {
   if (stopping) return;
@@ -74,6 +102,10 @@ setInterval(() => {
 }, pushMs);
 
 process.on("message", (message: NerveMessage) => {
+  if (message?.kind === "req") {
+    execute(message);
+    return;
+  }
   if (message?.kind !== "stop") return;
   stopping = true;
   bot?.quit("停止");

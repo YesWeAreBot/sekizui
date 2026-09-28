@@ -52,7 +52,9 @@ bun run lint
 bun run format
 ```
 
-新增工作区包时，记得在 `vitest.config.ts` 的 `local` 里补一个名字。
+`bun run test` 先跑一次全工作区类型检查（含 `tests/`），再跑 vitest。只跑类型检查用 `bun run typecheck`。
+
+新增工作区包时，记得在 `vitest.config.ts` 的 `local` 与 `tsconfig.check.json` 的 `paths` 里各补一个名字。
 
 ## 现状与下一步
 
@@ -60,6 +62,6 @@ bun run format
 
 - `@sekizui/arc`：弧模型（四件套与守卫）、变量目录、路径投影、问题与回答类型（与判断服务方的契约一致）。
 - `@sekizui/spinal`：窗口采样与连接代次、单飞与签名续期、判决缓存与保底判别、决策账本、判断客户端（`HttpDecider`）。
-- `@sekizui/nerve-minecraft`：mineflayer 引擎子进程（推帧 + 生命周期）、三十八条世界变量、采样面实现；测试里带一台刚够进入世界的假服务端。
+- `@sekizui/nerve-minecraft`：mineflayer 引擎子进程（推帧 + 生命周期）、三十八条世界变量、采样面实现；传出层的四个原语（走、跳、挖、攻击）与各自的终止判据；测试里带一台刚够进入世界的假服务端。
 
-下一步：引擎的请求/响应通道与**传出层**（执行原语的终止判据），然后是编排层的读写工具面（改弧、读账本）与动作库闭环。
+下一步：**动作库**（把弧的判决翻译成原语，形状见 `docs/05-decisions.md` U-03）、编排层的读写工具面（改弧、读账本），以及**方块感知**（采样面读方块，`dig` 的判据要在真世界才立得住）。
