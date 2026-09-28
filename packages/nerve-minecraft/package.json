@@ -1,0 +1,34 @@
+{
+  "name": "@sekizui/nerve-minecraft",
+  "version": "0.0.1",
+  "description": "Minecraft 世界一侧：mineflayer 引擎子进程、世界变量目录、采样面",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "type": "module",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./engine": {
+      "default": "./lib/engine.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@sekizui/arc": "workspace:*",
+    "mineflayer": "^4.39.0"
+  },
+  "devDependencies": {
+    "minecraft-data": "3.117.0",
+    "minecraft-protocol": "1.68.0"
+  }
+}

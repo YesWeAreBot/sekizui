@@ -70,6 +70,7 @@ project(arc, { values: sampler.read(), observedAt: 1_000, generation: 3 });
 
 ## 约定
 
+- **`Sampler.read()` 可以抛。** 读不到世界就抛，别返回编造的默认值——上层会把这一拍当作没有可用读数，旧判决停止续期、过了存活期就退保底。`generation()` 同理：只在真的读得到世界时才往后走。
 - 路径里的下标一律当通配：目录声明 `enemies[*].dist`，弧写 `enemies[0].dist` 或 `enemies[2].dist` 都是同一项，投影出来的字段名统一是 `enemies[*].dist`。
 - 可以整个根变量一起投影（`enemies`），拿到的是原样的结构，行与行之间的对应关系不会丢。
 - 取不到的字段是 `undefined`，不静默补默认值；通配碰到非数组返回 `[]`。

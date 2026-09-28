@@ -87,6 +87,8 @@ export class SpinalService extends Service {
         this.snapshot = next;
         sampled = true;
       } catch (error) {
+        // 读不到世界：这一拍没有可用读数，旧判决也就停止续期，过了存活期自然退保底
+        this.snapshot = undefined;
         this.note(error instanceof Error ? error.message : String(error));
         errors.push(this.notes[this.notes.length - 1]);
       }
