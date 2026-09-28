@@ -34,6 +34,7 @@ tick 边界钩子  →  采样器目录  →  快照（带 observedAt 与代次�
 - **快照不可变、带 `observedAt` 与代次。** 这一条换来离线回放：把录制的快照序列喂给渲染器，不动游戏也能重跑判据。
 - **单飞。** 同一时刻只允许一个请求在飞，否则慢的那次回来会覆盖新结果。
 - **结果带 TTL。** 抖动是 1.6 倍（252 → 402 ms），不设 TTL 等于让过期判断继续开车。
+- **状态没变就续期。** 投影结果一致说明世界没动，判断仍然成立，于是把存活期往前推而不是重问。心跳停了续期也停，判决自然过期。所有时刻都取宿主的心跳时钟（`pulse` / `directive` 的 `now`），不是墙钟；模型延迟另记在 `ms` 里。
 
 ## 判断模型的客户端
 
@@ -41,7 +42,8 @@ tick 边界钩子  →  采样器目录  →  快照（带 observedAt 与代次�
 - **按签名缓存**：状态签名没变就不发请求。`windowMs` 是上限而不是负载。
 - **算清最坏代价**：几百 token 的战斗态、3 Hz 满速，约 3.6 Mtok/小时，是每小时几毛钱量级；换成每 tick 灌全量状态会贵一百倍，还会正好吃满请求配额。所以"上限 + 签名缓存"不是优化，是设计前提。
 - **state 要小**：每个弧只投它投影出来的那几个字段。
-- 请求体的字段名以服务方的 live docs 为准，本仓库只定形状：`{ 模型, state, questions }`。
+- 契约按 [TypeSafe 评估端点](https://docs.typesafe.ai/api) 实现：`POST`，`Authorization: Bearer <API_KEY>`，体为 `{ state, model, questions }`；`questions` 按问题 id 建表，id 本身不进问题对象。响应按三种回答的联合类型校验，并逐条核对"回答的 type 与问题的 type 一致、每个问题都有回答"，对不上就当作判断失败，不落缓存。
+- 问题有三种：`noul`（是否，回概率）、`choice`（选一个，回选项与分布）、`score`（沿档位打分）。`choice` 与 `score` 带 `confidence`，**`noul` 不带**，本层按概率离抛硬币多远折算（`|2p−1|`）后再进同一个置信门；一条弧的整体置信取最弱的那条回答。
 
 ## 三类工件放哪
 
@@ -57,18 +59,22 @@ tick 边界钩子  →  采样器目录  →  快照（带 observedAt 与代次�
 
 ```json
 {
-  "at": 0,
   "arc": "kite",
-  "arcVer": 7,
   "model": "jev-1.13.0",
-  "stateDigest": "ab12",
-  "pick": { "horiz": "Away" },
-  "conf": 0.72,
-  "ms": 287
+  "sig": "6a1f0c4d",
+  "state": { "hp_percent": 45, "enemies[*].dist": [6] },
+  "answers": { "horiz": { "type": "choice", "choice": "Away", "probabilities": { "Away": 0.88, "Near": 0.12 }, "confidence": 0.81 } },
+  "confidence": 0.81,
+  "at": 1200,
+  "seenAt": 1200,
+  "generation": 2,
+  "ttlMs": 1500,
+  "ms": 287,
+  "usage": { "input_tokens": 318, "output_tokens": 34 }
 }
 ```
 
-有 `stateDigest` 和快照缓存，任何一条判断都能还原成"它当时看到什么、答了什么"。
+`model` 记的是服务方回的实际版本，不是请求里写的别名。有 `state` 和 `sig`，任何一条判断都能还原成"它当时看到什么、答了什么"，也能看出哪几次是同一个状态。
 
 ## 动作库的创作闭环
 
