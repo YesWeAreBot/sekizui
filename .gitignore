@@ -1,0 +1,26 @@
+# 依赖与产物
+node_modules/
+lib/
+dist/
+*.tsbuildinfo
+
+# 锁文件:仓库约定不跟踪 bun.lock
+bun.lock
+
+# 运行时数据:账本、弧库覆盖、快照缓存
+data/
+
+# 日志与覆盖率
+logs/
+*.log
+coverage/
+.nyc_output/
+
+# 环境
+.env
+.env.*.local
+
+# 编辑器与系统
+.DS_Store
+Thumbs.db
+.idea/

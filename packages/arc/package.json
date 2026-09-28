@@ -1,0 +1,26 @@
+{
+  "name": "@sekizui/arc",
+  "version": "0.0.1",
+  "description": "反射弧的契约与数据模型：弧声明、状态变量目录、按路径投影",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "type": "module",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  }
+}

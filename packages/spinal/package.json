@@ -1,0 +1,44 @@
+{
+  "name": "@sekizui/spinal",
+  "version": "0.0.1",
+  "description": "脊髓层的 Cordis 服务：弧库、窗口采样、判决缓存、决策账本",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "type": "module",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@sekizui/arc": "workspace:*",
+    "schemastery": "^3.18.0"
+  },
+  "devDependencies": {
+    "cordis": "^4.0.0-rc.8"
+  },
+  "peerDependencies": {
+    "cordis": "^4.0.0-rc.8"
+  },
+  "cordis": {
+    "description": {
+      "en": "Spinal layer: programmable reflex arcs",
+      "zh": "脊髓层：可编程反射弧"
+    },
+    "service": {
+      "implements": [
+        "spinal"
+      ]
+    }
+  }
+}
