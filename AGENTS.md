@@ -39,6 +39,7 @@ current code  >  用户最新指令  >  docs/  >  docs/history/
 | **动进程、采样、请求、账本** | [docs/03-implementation.md](docs/03-implementation.md)                      |
 | 动验收、消融、指标           | [docs/04-acceptance.md](docs/04-acceptance.md)                              |
 | 想知道某一项为什么这么定     | [docs/05-decisions.md](docs/05-decisions.md)                                |
+| 想知道接下来做什么           | [ROADMAP.md](ROADMAP.md)                                                    |
 
 **同步义务**：新增分层结论、改弧模型、改三份薄接口、踩到新坑，回来更新上面相应的一篇与 `docs/05-decisions.md`；被推翻的结论写进 `docs/05-decisions.md` 的「被推翻」表，不要删。
 
